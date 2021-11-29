@@ -1,6 +1,6 @@
 # What starting data will my application need to run?
 
-Questions and Answers:
+<!-- Questions and Answers: 
 
     Array list for our series of questions
 
@@ -19,7 +19,7 @@ Questions and Answers:
 
             correctAnswer: multipleChoiceOptions[insert number],
 
-        }
+        } -->
 
 Timer / Score
 
@@ -41,9 +41,9 @@ function startGame () { ... }
 
 - validate the user's answer (if else with conditionals)
 
-    - If the user's answer is wrong, subtract time from the timer
+    - If the user's answer is wrong, subtract time from the timer and display a "Wrong." message below the buttons in the next question.
 
-    - If the user's answer is correct, increment number correct
+    - If the user's answer is correct, increment number correct and display a "Correct." message below the buttons in the next question.
 
 - display the next question
 
@@ -70,3 +70,7 @@ var userInitials = "";
 
 - number of total questions
 const numTotalQuestions = number;
+
+for (var i = 0; i < "NUMBER"; i++) {
+    
+}
