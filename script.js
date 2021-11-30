@@ -1,6 +1,3 @@
-// Start button connection from the HTML
-var startButtonEl = document.getElementById('startButton');
-
 // Declare questions div from HTML into variable questionsEl
 var questionsEl = document.getElementById('questions');
 
@@ -31,6 +28,12 @@ var welcomeMessageEl = document.getElementById('welcomeMessage');
 // Create array to store high scores
 var savedHighScores = [];
 
+// Run init function to pull local storage to variables defined in this script
+init();
+
+// Run welcomeScreen function upon page load
+welcomeScreen();
+
 // Create object array to store all questions for the quiz.
 var quizQuestions = [
     // Question 1 Seattle Mariners
@@ -59,12 +62,78 @@ var quizQuestions = [
     ],
 
     correctAnswer: "Matt Hasselbeck",
-    }
+    },
+
+    // Question 3 Seattle Sonics
+    {
+    questionText: "Which of these basketball players was known as the Glove on the Seattle Sonics NBA team?",
+    
+    multipleChoiceOptions: [
+        "Shawn Kemp",
+        "Kevin Durant",
+        "Gary Payton",
+        "Michael Jordan"
+    ],
+
+    correctAnswer: "Gary Payton",
+    },
+
+    // Question 4 Seattle Storm
+    {
+    questionText: "In what year was Forward Breanna Stewart drafted by the Seattle Storm?",
+    
+    multipleChoiceOptions: [
+        "2016",
+        "2015",
+        "2019",
+        "2013"
+    ],
+
+    correctAnswer: "2016",
+    },
+
+    // Question 5 Seattle Sounders
+    {
+    questionText: "Which of the following former EPL athletes were part of the Seattle Sounders?",
+    
+    multipleChoiceOptions: [
+        "Clint Dempsey",
+        "Zlatan Ibrahimovic",
+        "David Beckham",
+        "Frank Lampard"
+    ],
+
+    correctAnswer: "Clint Dempsey",
+    },
+
+    // Question 6 
 
 ];
 
 // Declare and set number of total questions to the length of the quizQuestions array
 var numTotalQuestions = quizQuestions.length;
+
+// Function to populate the welcomeMessage div in the HTML file.
+function welcomeScreen() {
+    // Create and append an h1
+    var welcomeScreenTitle = document.createElement('h1');
+    welcomeScreenTitle.innerHTML = "Welcome to my Seattle sports trivia quiz."
+    welcomeMessageEl.appendChild(welcomeScreenTitle);
+
+    // Create and append a P element
+    var welcomeParagraph = document.createElement('p');
+    welcomeParagraph.innerHTML = "This quiz contains trivia questions on Seattle sports. Have fun!"
+    welcomeMessageEl.appendChild(welcomeParagraph);
+
+    // Create and append a button with id #startButton
+    var startQuizButton = document.createElement('button');
+    startQuizButton.innerHTML = "Start Quiz";
+    startQuizButton.setAttribute('id', 'startButton');
+    welcomeMessageEl.appendChild(startQuizButton);
+}
+
+// Start button connection from the HTML
+var startButtonEl = document.getElementById('startButton');
 
 // Compare user question with correct question
 function userAnswer(event) {
@@ -81,9 +150,9 @@ function userAnswer(event) {
     if (answer === quizQuestions[quizIndexer].correctAnswer){
         // Increment numCorrect
         numCorrect++;
-        // display correct - can either appendClassAttribute from hidden to visible to appendHTML if i want to write the message in JS
+        // display correct 
     } else {
-        // display incorrect - *see note above*
+        // display incorrect 
         quizTimerInterval -= 6;
     }
 
@@ -96,10 +165,6 @@ function userAnswer(event) {
         // repopulate elements with current quizQuestions position
         nextQuestion();
 
-    } else {
-
-        // Ends game and asks the user if they want to save their score and play again
-        endGame();
     }
 
 }
@@ -109,13 +174,15 @@ questionsEl.addEventListener('click', userAnswer);
 
 // Function to start the game from the welcome page.
 function startGame(event) {
-    
-    // Hide the welcome message
-    // startButtonEl.parentNode.className = "hidden";
 
-
-
+    // Clears out welcomeMessageDiv
     welcomeMessageEl.innerHTML = "";
+
+    // Restarts quizIndexer
+    quizIndexer = 0;
+
+    // Resets quizTimerInterval
+    quizTimerInterval = 60;
 
     // Set userInitials to empty (default)
     userInitials = "";
@@ -126,16 +193,24 @@ function startGame(event) {
     // Write question
     generateQuestion();
 
+    // Run quizTime
+    quizTime();
+
 }
 
+// Event listener for startButtonEl to start the game.
 startButtonEl.addEventListener('click', startGame);
 
+// Function to run the quizTime
 function quizTime() {
     var timerInterval = setInterval(function() {
         quizTimerInterval--;
-        quizTimeEl.textContent = "Time Remaining: " + quizTimerInterval;
+        
+        // Add time to header.
+        var timeDisplay = document.getElementById('quizCountdown');
+        timeDisplay = quizTimeEl.textContent = "Time Remaining: " + quizTimerInterval;
 
-        if (quizTimerInterval === 0){
+        if (quizTimerInterval === 0 || quizIndexer === numTotalQuestions){
             clearInterval(timerInterval);
             endGame();
         }
@@ -181,8 +256,6 @@ function generateQuestion() {
 // This function clears out the contents of the dynamically generated elements from 
 // generateQuestion and repopulates the contents with the information of the current indexer of quizQuestions.
 function nextQuestion() {
-    
-    console.log("nextQuestion worked.");
 
     // Captures questionH2 element from document into nextQuestionEl var
     var nextQuestionEl = document.getElementById('questionH2');
@@ -205,13 +278,11 @@ function nextQuestion() {
     }
 }
 
+// Function to end the game when timer runs out or all questions have been answered.
 function endGame() {
     
     // Thanos joke for lols
-    console.log("I am inevitable.")
-
-    // user record initials
-    // save to local storage
+    console.log("I am inevitable.");
 
     // Clear out questionsEl div
     questionsEl.innerHTML = "";
@@ -273,6 +344,7 @@ function endGame() {
     }
 }
 
+// Function to run at the beginning of the page load.
 function init() {
     // Retrieves high scores from local storage
     var storedHighScores = JSON.parse(localStorage.getItem("savedHighScores"));
@@ -281,6 +353,7 @@ function init() {
     if (storedHighScores !== null) {
         savedHighScores = storedHighScores;
     }
+
 
 }
 
@@ -326,23 +399,53 @@ function renderHighScores() {
     // Creating a function to clearHighScores
     function clearHighScores() {
         
-        for (var i = 0; i < savedHighScores.length; i++) {
-            var scoreItem = document.getElementById("list" + i);
-            scoreItem.innerHTML = "";
-        }
-        renderHighScores();
+        savedHighScores = [];
+
+        // Saves empty array into local storage to clear it out.
+        localStorage.setItem("savedHighScores", JSON.stringify(savedHighScores));
+
+        highScoresEl.innerHTML = "";
+
+        // Create h1 title for highScoresEl div
+        var highScoresTitle = document.createElement('h1');
+
+        // Sets text of highScoresTitle
+        highScoresTitle.innerHTML = "Highscores"
+
+        // Add highScoresTitle to highScoresEl
+        highScoresEl.appendChild(highScoresTitle);
+
     }
     
     //event listener for the clear high scores
     clearHighScoresButton.addEventListener('click', clearHighScores);
+
+    // Creating a function to Play Again
+    function playQuizAgain() {
+    
+        console.log("play again?");
+        highScoresEl.innerHTML = "";
+        endGameEl.innerHTML = "";
+
+        welcomeScreen();
+    
+    }
+
+    playAgain.addEventListener('click', playQuizAgain);
+
 }
 
-// Current issue is that the clearHighScores function keeps reprinting the high scores list and only deletes the first high scores list.
+var viewHighScoresEl = document.getElementById("viewHighScores");
 
-function playAgain() {
-
-    // Clear out highScoresEl
-
+function viewHighScoresList (event) {
+    console.log("View high scores list yo.")
+    welcomeMessageEl.innerHTML = "";
+    questionsEl.innerHTML = "";
+    endGameEl.innerHTML = "";
+    renderHighScores();
 }
 
-init();
+viewHighScoresEl.addEventListener('click', viewHighScoresList);
+
+
+
